@@ -1,0 +1,25 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryTextColor': '#000', 'secondaryTextColor': '#000' }}}%%
+flowchart TB
+
+U([User<br/>Korzysta z aplikacji przy użyciu przeglądarki])
+
+subgraph Frontend Layer
+    FE[NextJS Frontend<br/>Renderuje UI i wysyła zapytania REST komunikując się z bazą oraz BE<br/><b>Port 3001</b>]
+end
+
+subgraph Backend Layer
+    BE[Express API<br/>Warstwa logiczna aplikacji<br/><b>Port 3000</>]
+end
+
+subgraph Data Layer
+    DB[(PostgreSQL<br/>Przechowuje dane użytkowników oraz operacje z nimi związane<br/><b>Port 5432</b>)]
+end
+
+U -->|HTTPS| FE
+FE -->|REST API| BE
+BE -->|SQL| DB
+
+style U fill:#E8EAF6,stroke:#3F51B5,stroke-width:2px,color:#000
+style FE fill:#EDE7F6,stroke:#3949AB,stroke-width:2px,color:#000
+style BE fill:#F3E5F5,stroke:#5E35B1,stroke-width:2px,color:#000
+style DB fill:#E1F5FE,stroke:#6A1B9A,stroke-width:2px,color:#000
