@@ -30,17 +30,15 @@ services:
       - database
 
   frontend:
-    image: node:20-alpine
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
-    command: sh -c "npm install && npm run dev"
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:3000
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "3001:3001"
+      - "8080:8080"
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:3000
     depends_on:
       - backend
 
 volumes:
-  dbdata:
+  dbdata:   
