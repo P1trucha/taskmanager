@@ -1,6 +1,7 @@
 services:
   database:
     image: postgres:16-alpine
+    container_name: taskmanager-database
     environment:
       POSTGRES_DB: taskdb
       POSTGRES_USER: taskuser
@@ -12,11 +13,10 @@ services:
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
   backend:
-    image: node:20-alpine
-    working_dir: /app
-    volumes:
-      - ./backend:/app
-    command: sh -c "npm install && npm run dev"
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: taskmanager-backend
     environment:
       PORT: 3000
       DB_HOST: database
@@ -32,13 +32,14 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: DockerFile
-    ports:
-      - "8080:8080"
+      dockerfile: Dockerfile
+    container_name: taskmanager-frontend
     environment:
       NEXT_PUBLIC_API_URL: http://backend:3000
+    ports:
+      - "8080:8080"
     depends_on:
       - backend
 
 volumes:
-  dbdata:   
+  dbdata:

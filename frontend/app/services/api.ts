@@ -10,8 +10,8 @@ export type TaskItem = {
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000",
   headers: {
-    "Content-Type": "application/json",
-  },
+    "Content-Type": "application/json"
+  }
 });
 
 const mockTasks: TaskItem[] = [
@@ -19,20 +19,20 @@ const mockTasks: TaskItem[] = [
     id: 1,
     title: "Przygotować Artefakt 3",
     description: "Stworzyć działającą warstwę prezentacji",
-    status: "todo",
+    status: "todo"
   },
   {
     id: 2,
     title: "Zaktualizować README",
     description: "Dodać opis frontendu i Dockerfile",
-    status: "done",
+    status: "done"
   },
   {
     id: 3,
     title: "Uruchomić front w Dockerze",
     description: "Sprawdzić działanie pod localhost:8080",
-    status: "todo",
-  },
+    status: "todo"
+  }
 ];
 
 export async function getTasks(): Promise<TaskItem[]> {

@@ -1,12 +1,14 @@
 {
-  "name": "task-manager-backend",
+  "name": "taskmanager-backend",
   "version": "1.0.0",
+  "description": "Backend API for Task Manager",
   "main": "server.js",
   "scripts": {
-    "dev": "node server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.19.2"
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
   }
 }

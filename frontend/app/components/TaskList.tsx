@@ -6,11 +6,19 @@ type TaskListProps = {
 
 export default function TaskList({ tasks }: TaskListProps) {
   return (
-    <ul>
+    <ul style={{ listStyle: "none", padding: 0 }}>
       {tasks.map((task) => (
-        <li key={task.id} style={{ marginBottom: "12px" }}>
-          <strong>{task.title}</strong>
-          {task.description && <p>{task.description}</p>}
+        <li
+          key={task.id}
+          style={{
+            marginBottom: "16px",
+            padding: "16px",
+            borderRadius: "10px",
+            background: "#6d28d9"
+          }}
+        >
+          <strong style={{ display: "block", fontSize: "20px" }}>{task.title}</strong>
+          {task.description && <p style={{ margin: "8px 0" }}>{task.description}</p>}
           {task.status && <small>Status: {task.status}</small>}
         </li>
       ))}
