@@ -58,3 +58,9 @@ docker compose down
 Sprawdzenie statusu:
 
 docker compose ps 
+
+Test struktury backendu dostępny jest pod /tasks
+
+Sprawdzenie sieci projektu 
+
+docker compose logs 
