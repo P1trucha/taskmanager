@@ -1,4 +1,5 @@
-'use client'
+"use client";
+
 import { useEffect, useState } from "react";
 import { getTasks, type TaskItem } from "../services/api";
 import TaskList from "../components/TaskList";
@@ -24,7 +25,10 @@ export default function TasksPage() {
   }, []);
 
   return (
-    <main style={{ padding: "24px" }} className="margin-auto mx-auto my-auto bg-violet-900 ">
+    <main
+      style={{ padding: "24px" }}
+      className="margin-auto mx-auto my-auto bg-violet-900"
+    >
       <h1>Lista zadań</h1>
       {loading && <p>Ładowanie danych...</p>}
       {error && <p>{error}</p>}
