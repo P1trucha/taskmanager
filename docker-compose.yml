@@ -2,6 +2,7 @@ services:
   database:
     image: postgres:16-alpine
     container_name: taskmanager-database
+    restart: always
     environment:
       POSTGRES_DB: taskdb
       POSTGRES_USER: taskuser
@@ -17,15 +18,13 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: taskmanager-backend
+    restart: always
     environment:
-      PORT: 3000
-      DB_HOST: database
-      DB_PORT: 5432
-      DB_NAME: taskdb
-      DB_USER: taskuser
-      DB_PASS: taskpass
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8081
+      ConnectionStrings__DefaultConnection: Host=database;Port=5432;Database=taskdb;Username=taskuser;Password=taskpass
     ports:
-      - "3000:3000"
+      - "8081:8081"
     depends_on:
       - database
 
@@ -34,8 +33,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: taskmanager-frontend
+    restart: always
     environment:
-      NEXT_PUBLIC_API_URL: http://backend:3000
+      NEXT_PUBLIC_API_URL: http://localhost:8081
     ports:
       - "8080:8080"
     depends_on:
