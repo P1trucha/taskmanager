@@ -1,40 +1,99 @@
+using backend.Data;
+using backend.DTOs;
 using backend.Models;
-using backend.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services
 {
     public class TaskService
     {
-        private readonly TaskRepository _repository;
+        private readonly AppDbContext _context;
 
-        public TaskService(TaskRepository repository)
+        public TaskService(AppDbContext context)
         {
-            _repository = repository;
+            _context = context;
         }
 
-        public async Task<List<TaskItem>> GetAllTasksAsync()
+        public async Task<IEnumerable<TaskReadDto>> GetAllAsync()
         {
-            return await _repository.GetAllAsync();
+            return await _context.Tasks
+                .Select(t => new TaskReadDto
+                {
+                    Id = t.Id,
+                    Title = t.Title,
+                    Description = t.Description,
+                    IsCompleted = t.IsCompleted
+                })
+                .ToListAsync();
         }
 
-        public async Task<TaskItem?> GetTaskByIdAsync(int id)
+        public async Task<TaskReadDto?> GetByIdAsync(int id)
         {
-            return await _repository.GetByIdAsync(id);
+            var task = await _context.Tasks.FindAsync(id);
+
+            if (task == null) return null;
+
+            return new TaskReadDto
+            {
+                Id = task.Id,
+                Title = task.Title,
+                Description = task.Description,
+                IsCompleted = task.IsCompleted
+            };
         }
 
-        public async Task<TaskItem> CreateTaskAsync(TaskItem task)
+        public async Task<TaskReadDto> CreateAsync(TaskCreateDto dto)
         {
-            return await _repository.AddAsync(task);
+            var task = new TaskEntity
+            {
+                Title = dto.Title,
+                Description = dto.Description,
+                IsCompleted = false
+            };
+
+            _context.Tasks.Add(task);
+            await _context.SaveChangesAsync();
+
+            return new TaskReadDto
+            {
+                Id = task.Id,
+                Title = task.Title,
+                Description = task.Description,
+                IsCompleted = task.IsCompleted
+            };
         }
 
-        public async Task<TaskItem?> UpdateTaskAsync(int id, TaskItem updatedTask)
+        public async Task<TaskReadDto?> UpdateAsync(int id, TaskUpdateDto dto)
         {
-            return await _repository.UpdateAsync(id, updatedTask);
+            var task = await _context.Tasks.FindAsync(id);
+
+            if (task == null) return null;
+
+            task.Title = dto.Title;
+            task.Description = dto.Description;
+            task.IsCompleted = dto.IsCompleted;
+
+            await _context.SaveChangesAsync();
+
+            return new TaskReadDto
+            {
+                Id = task.Id,
+                Title = task.Title,
+                Description = task.Description,
+                IsCompleted = task.IsCompleted
+            };
         }
 
-        public async Task<bool> DeleteTaskAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            return await _repository.DeleteAsync(id);
+            var task = await _context.Tasks.FindAsync(id);
+
+            if (task == null) return false;
+
+            _context.Tasks.Remove(task);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

@@ -13,37 +13,36 @@ namespace backend.Repositories
             _context = context;
         }
 
-        public async Task<List<TaskItem>> GetAllAsync()
+        public async Task<List<TaskEntity>> GetAllAsync()
         {
             return await _context.Tasks.ToListAsync();
         }
 
-        public async Task<TaskItem?> GetByIdAsync(int id)
+        public async Task<TaskEntity?> GetByIdAsync(int id)
         {
             return await _context.Tasks.FirstOrDefaultAsync(t => t.Id == id);
         }
 
-        public async Task<TaskItem> AddAsync(TaskItem task)
+        public async Task<TaskEntity> CreateAsync(TaskEntity task)
         {
-            task.CreatedAt = DateTime.UtcNow;
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
             return task;
         }
 
-        public async Task<TaskItem?> UpdateAsync(int id, TaskItem updatedTask)
+        public async Task<TaskEntity?> UpdateAsync(TaskEntity updatedTask)
         {
-            var existing = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == id);
+            var existingTask = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == updatedTask.Id);
 
-            if (existing == null)
+            if (existingTask == null)
                 return null;
 
-            existing.Title = updatedTask.Title;
-            existing.Description = updatedTask.Description;
-            existing.IsCompleted = updatedTask.IsCompleted;
+            existingTask.Title = updatedTask.Title;
+            existingTask.Description = updatedTask.Description;
+            existingTask.IsCompleted = updatedTask.IsCompleted;
 
             await _context.SaveChangesAsync();
-            return existing;
+            return existingTask;
         }
 
         public async Task<bool> DeleteAsync(int id)

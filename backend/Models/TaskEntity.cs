@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace backend.Models
 {
     [Table("tasks")]
-    public class TaskItem
+    public class TaskEntity
     {
         [Key]
         [Column("id")]

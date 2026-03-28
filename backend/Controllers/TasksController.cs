@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using backend.DTOs;
-using backend.Models;
 using backend.Services;
 
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/tasks")]
+    [Route("api/[controller]")]
     public class TasksController : ControllerBase
     {
         private readonly TaskService _taskService;
@@ -17,69 +16,48 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<TaskReadDto>>> GetAll()
         {
-            var tasks = await _taskService.GetAllTasksAsync();
+            var tasks = await _taskService.GetAllAsync();
             return Ok(tasks);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<ActionResult<TaskReadDto>> GetById(int id)
         {
-            var task = await _taskService.GetTaskByIdAsync(id);
+            var task = await _taskService.GetByIdAsync(id);
 
             if (task == null)
-                return NotFound(new { message = $"Task with id {id} not found." });
+                return NotFound();
 
             return Ok(task);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateTaskDto dto)
+        public async Task<ActionResult<TaskReadDto>> Create([FromBody] TaskCreateDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Title))
-                return BadRequest(new { message = "Title is required." });
-
-            var newTask = new TaskItem
-            {
-                Title = dto.Title,
-                Description = dto.Description,
-                IsCompleted = false
-            };
-
-            var createdTask = await _taskService.CreateTaskAsync(newTask);
-
+            var createdTask = await _taskService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = createdTask.Id }, createdTask);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateTaskDto dto)
+        public async Task<ActionResult<TaskReadDto>> Update(int id, [FromBody] TaskUpdateDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Title))
-                return BadRequest(new { message = "Title is required." });
+            var updatedTask = await _taskService.UpdateAsync(id, dto);
 
-            var updatedTask = new TaskItem
-            {
-                Title = dto.Title,
-                Description = dto.Description,
-                IsCompleted = dto.IsCompleted
-            };
+            if (updatedTask == null)
+                return NotFound();
 
-            var result = await _taskService.UpdateTaskAsync(id, updatedTask);
-
-            if (result == null)
-                return NotFound(new { message = $"Task with id {id} not found." });
-
-            return Ok(result);
+            return Ok(updatedTask);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _taskService.DeleteTaskAsync(id);
+            var deleted = await _taskService.DeleteAsync(id);
 
             if (!deleted)
-                return NotFound(new { message = $"Task with id {id} not found." });
+                return NotFound();
 
             return NoContent();
         }

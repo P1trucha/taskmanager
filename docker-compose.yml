@@ -1,17 +1,18 @@
 services:
   database:
-    image: postgres:16-alpine
+    image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: taskmanager-database
     restart: always
+    user: "0:0"
     environment:
-      POSTGRES_DB: taskdb
-      POSTGRES_USER: taskuser
-      POSTGRES_PASSWORD: taskpass
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "StrongPassword123!"
     ports:
-      - "5432:5432"
+      - "1433:1433"
     volumes:
-      - dbdata:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - dbdata:/var/opt/mssql
+    networks:
+      - app-network
 
   backend:
     build:
@@ -21,12 +22,14 @@ services:
     restart: always
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8081
-      ConnectionStrings__DefaultConnection: Host=database;Port=5432;Database=taskdb;Username=taskuser;Password=taskpass
+      ASPNETCORE_URLS: "http://+:8081"
+      ConnectionStrings__DefaultConnection: "Server=database,1433;Database=TaskManagerDb;User Id=sa;Password=StrongPassword123!;TrustServerCertificate=True;"
     ports:
       - "8081:8081"
     depends_on:
       - database
+    networks:
+      - app-network
 
   frontend:
     build:
@@ -35,11 +38,16 @@ services:
     container_name: taskmanager-frontend
     restart: always
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8081
+      NEXT_PUBLIC_API_URL: "http://localhost:8081"
     ports:
       - "8080:8080"
     depends_on:
       - backend
+    networks:
+      - app-network
 
 volumes:
   dbdata:
+
+networks:
+  app-network:
