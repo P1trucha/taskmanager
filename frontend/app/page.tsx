@@ -2,19 +2,20 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: "16px"
-      }}
-    >
-      <h1>Taskmanager</h1>
-      <p>Aplikacja demonstracyjna uruchomiona w Docker Compose.</p>
-      <Link href="/tasks">Przejdź do listy zadań</Link>
+    <main className="landing-shell">
+      <section className="landing-card">
+        <p className="eyebrow">Task Manager</p>
+        <h1>Frontend CRUD do demonstracji artefaktu nr 5</h1>
+        <p>
+        
+        </p>
+
+        <div className="landing-actions">
+          <Link href="/tasks" className="primary-btn link-btn">
+            Otwórz dashboard
+          </Link>
+        </div>
+      </section>
     </main>
   );
 }
