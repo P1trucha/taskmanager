@@ -35,7 +35,7 @@ jobs:
         run: dotnet build ./backend/backend.csproj --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test ./TaskManager.Tests/TaskManager.Tests.csproj --configuration Release --no-build --verbosity normal
+        run: dotnet test ./TaskManager.Tests/TaskManager.Tests.csproj --configuration Release --verbosity normal
 
       - name: Publish backend
         run: dotnet publish ./backend/backend.csproj --configuration Release --output ${{ github.workspace }}/publish
