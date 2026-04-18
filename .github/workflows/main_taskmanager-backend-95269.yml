@@ -1,4 +1,5 @@
-name: Backend CI/CD - taskmanager-backend-95269
+name: Build and deploy ASP.Net Core app to Azure Web App - taskmanager-backend-95269
+
 on:
   push:
     branches:
@@ -49,7 +50,6 @@ jobs:
     runs-on: windows-latest
     needs: build
     permissions:
-      id-token: write
       contents: read
 
     steps:
@@ -59,16 +59,9 @@ jobs:
           name: backend-app
           path: ${{ github.workspace }}/publish
 
-      - name: Login to Azure
-        uses: azure/login@v2
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-- name: Deploy to Azure Web App
-  uses: azure/webapps-deploy@v3
-  with:
-    app-name: 'taskmanager-backend-95269'
-    publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-    package: ${{ github.workspace }}/publish
+          app-name: 'taskmanager-backend-95269'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ${{ github.workspace }}/publish
