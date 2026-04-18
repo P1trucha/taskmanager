@@ -2,7 +2,7 @@
 
 ## Autor
 
-**Piotr Mazepka**  
+**Piotr Mazepka**
 Nr albumu: **95269**
 
 ---
@@ -13,11 +13,11 @@ Task Manager to aplikacja webowa służąca do zarządzania zadaniami. System um
 
 Aplikacja została zaprojektowana w architekturze trójwarstwowej:
 
-- warstwa prezentacji (frontend)
-- warstwa logiki aplikacji (backend API)
-- warstwa danych (baza danych)
+* warstwa prezentacji (frontend)
+* warstwa logiki aplikacji (backend API)
+* warstwa danych (baza danych)
 
-W ramach artefaktu 6 projekt został rozszerzony o wdrożenie w środowisku chmurowym, co umożliwia korzystanie z aplikacji bez konieczności uruchamiania jej lokalnie.
+Projekt został rozwinięty o wdrożenie w środowisku chmurowym oraz mechanizmy bezpieczeństwa i automatyzacji CI/CD.
 
 ---
 
@@ -25,53 +25,55 @@ W ramach artefaktu 6 projekt został rozszerzony o wdrożenie w środowisku chmu
 
 System umożliwia wykonywanie operacji CRUD:
 
-- **CREATE** – tworzenie nowych zadań  
-- **READ** – przeglądanie listy zadań  
-- **UPDATE** – edycja oraz zmiana statusu zadania  
-- **DELETE** – usuwanie zadań  
+* **CREATE** – tworzenie nowych zadań
+* **READ** – przeglądanie listy zadań
+* **UPDATE** – edycja oraz zmiana statusu zadania
+* **DELETE** – usuwanie zadań
 
 Dodatkowo:
 
-- zmiana statusu zadania (zakończone / aktywne)  
-- komunikacja frontend–backend przez REST API  
-- dynamiczne pobieranie danych  
-- nowoczesny interfejs użytkownika (Next.js)  
+* zmiana statusu zadania (zakończone / aktywne)
+* komunikacja frontend–backend przez REST API
+* dynamiczne pobieranie danych
+* nowoczesny interfejs użytkownika (Next.js)
 
 ---
 
 ## Stos technologiczny
 
 | Warstwa        | Technologia             |
-|----------------|------------------------|
-| Frontend       | Next.js (React)        |
-| Backend        | .NET 8 Web API         |
-| Baza danych    | Azure SQL / SQL Server |
-| ORM            | Entity Framework Core  |
-| Konteneryzacja | Docker + Docker Compose|
-| Chmura         | Microsoft Azure        |
-| API            | REST                   |
+| -------------- | ----------------------- |
+| Frontend       | Next.js (React)         |
+| Backend        | .NET 8 Web API          |
+| Baza danych    | Azure SQL / SQL Server  |
+| ORM            | Entity Framework Core   |
+| Konteneryzacja | Docker + Docker Compose |
+| Chmura         | Microsoft Azure         |
+| API            | REST                    |
+| CI/CD          | GitHub Actions          |
 
 ---
 
 ## Architektura systemu
 
-Aplikacja została zaprojektowana w architekturze 3-warstwowej:
+### Warstwa prezentacji
 
-### 1. Warstwa prezentacji
 Frontend aplikacji napisany w Next.js, odpowiedzialny za interfejs użytkownika oraz komunikację z API.
 
-### 2. Warstwa aplikacyjna
+### Warstwa aplikacyjna
+
 Backend w postaci REST API (.NET), obsługujący logikę aplikacji oraz komunikację z bazą danych.
 
-### 3. Warstwa danych
+### Warstwa danych
+
 Baza danych SQL Server / Azure SQL przechowująca dane o zadaniach.
 
 Diagram architektury:
 
-
-docs/architecture.png
+```
+docs/architecture.png  
 docs/architecture.mmd
-
+```
 
 ---
 
@@ -81,23 +83,79 @@ Aplikacja została wdrożona w środowisku Microsoft Azure.
 
 ### Wykorzystane usługi:
 
-- App Service (Frontend – Next.js)  
-- App Service (Backend – .NET API)  
-- Azure SQL Database  
+* App Service (Frontend – Next.js)
+* App Service (Backend – .NET API)
+* Azure SQL Database
 
 ### Schemat działania:
 
-Użytkownik (przeglądarka)  
-→ Frontend (Azure App Service)  
-→ Backend API (.NET)  
-→ Azure SQL Database  
+Użytkownik (przeglądarka)
+→ Frontend (Azure App Service)
+→ Backend API (.NET)
+→ Azure SQL Database
 
-### Zalety wdrożenia:
+---
 
-- dostęp do aplikacji przez Internet  
-- brak potrzeby lokalnej instalacji  
-- skalowalność systemu  
-- integracja z usługami chmurowymi  
+## Zabezpieczenie aplikacji (Artefakt 7)
+
+W ramach projektu wdrożono mechanizmy bezpieczeństwa:
+
+* usunięcie connection stringa z kodu źródłowego
+* wykorzystanie **Azure Key Vault** do przechowywania danych wrażliwych
+* konfiguracja **Managed Identity** dla App Service
+* integracja z Key Vault przy użyciu `DefaultAzureCredential`
+
+Dzięki temu aplikacja nie przechowuje danych dostępowych w plikach konfiguracyjnych ani repozytorium.
+
+---
+
+## Testy i CI/CD (Artefakt 8)
+
+### Test jednostkowy
+
+Dodano projekt testowy `TaskManager.Tests` (xUnit), zawierający test:
+
+* **NewTask_ShouldNotBeCompleted** – sprawdza, czy nowe zadanie ma domyślnie ustawione `IsCompleted = false`
+
+Uruchomienie testów:
+
+```bash
+dotnet test
+```
+
+---
+
+### Automatyzacja CI/CD
+
+Zaimplementowano automatyczne wdrażanie aplikacji z wykorzystaniem:
+
+* GitHub Actions
+* Azure Deployment Center
+
+Pipeline wykonuje:
+
+* build aplikacji
+* testy jednostkowe
+* publikację aplikacji
+* wdrożenie do Azure App Service
+
+---
+
+### Push test
+
+Po wykonaniu zmiany w kodzie i wysłaniu jej do repozytorium:
+
+```bash
+git add .
+git commit -m "test CI/CD"
+git push
+```
+
+następuje automatyczne:
+
+* uruchomienie pipeline
+* wdrożenie aplikacji
+* aktualizacja wersji na serwerze
 
 ---
 
@@ -108,7 +166,7 @@ Projekt może być uruchamiany lokalnie przy użyciu Docker Compose.
 ### Kontenery:
 
 | Kontener             | Opis                  |
-|----------------------|----------------------|
+| -------------------- | --------------------- |
 | taskmanager-frontend | aplikacja frontendowa |
 | taskmanager-backend  | REST API (.NET)       |
 | taskmanager-database | SQL Server            |
@@ -117,133 +175,54 @@ Projekt może być uruchamiany lokalnie przy użyciu Docker Compose.
 
 ## Uruchomienie projektu (lokalnie)
 
-W katalogu głównym projektu:
-
 ```bash
 docker compose up --build
-Dostęp do aplikacji
-Lokalnie:
+```
+
+### Dostęp:
 
 Frontend:
-
 http://localhost:8080
 
 Backend API:
-
 http://localhost:8081
 
 Swagger:
-
 http://localhost:8081/swagger
-W chmurze:
 
-Frontend:
+---
 
-https://<twoja-aplikacja>.azurewebsites.net
+## Endpointy API
 
-Backend:
+* GET /api/tasks
+* GET /api/tasks/{id}
+* POST /api/tasks
+* PUT /api/tasks/{id}
+* DELETE /api/tasks/{id}
 
-https://<twoje-api>.azurewebsites.net
-Zarządzanie kontenerami
+---
 
-Zatrzymanie:
+## Struktura projektu
 
-docker compose down
-
-Restart:
-
-docker compose up
-
-Status:
-
-docker compose ps
-
-Logi:
-
-docker compose logs
-Endpointy API
-Pobranie wszystkich zadań
-GET /api/tasks
-Pobranie zadania po ID
-GET /api/tasks/{id}
-Dodanie zadania
-POST /api/tasks
-
-Przykład:
-
-curl -X POST http://localhost:8081/api/tasks \
--H "Content-Type: application/json" \
--d "{\"title\":\"Test\",\"description\":\"Opis\"}"
-Aktualizacja zadania
-PUT /api/tasks/{id}
-Usunięcie zadania
-DELETE /api/tasks/{id}
-DTO i stabilność API
-
-Zastosowano warstwę DTO (TaskReadDto), dzięki czemu:
-
-backend nie zwraca bezpośrednio encji bazy danych
-zwiększone jest bezpieczeństwo
-możliwe są zmiany w bazie bez wpływu na API
-Migracje bazy danych
-
-Tworzenie migracji:
-
-dotnet ef migrations add InitialCreate
-
-Zastosowanie migracji:
-
-dotnet ef database update
-
-Folder migracji:
-
-backend/Migrations
-Trwałość danych (Docker Volume)
-
-Zastosowano named volume:
-
-volumes:
-  dbdata:
-
-Dzięki temu dane nie są tracone po restarcie kontenerów.
-
-Struktura projektu
+```
 taskmanager
 │
 ├── backend
-│   ├── Controllers
-│   ├── Models
-│   ├── DTOs
-│   ├── Services
-│   ├── Repositories
-│   └── Data
-│
 ├── frontend
-│   ├── app
-│   ├── components
-│   └── services
-│
+├── TaskManager.Tests
 ├── docker-compose.yml
 └── README.md
-Testowanie API
+```
 
-API można testować przy użyciu:
+---
 
-Swagger UI
-Postman
-curl
+## Podsumowanie
 
-Swagger:
+Projekt przedstawia kompletną aplikację CRUD działającą w architekturze trójwarstwowej, wdrożoną w środowisku chmurowym oraz rozszerzoną o:
 
-http://localhost:8081/swagger
-Podsumowanie
+* zabezpieczenie danych (Azure Key Vault)
+* zarządzanie tożsamością (Managed Identity)
+* testy jednostkowe
+* automatyzację CI/CD
 
-Projekt przedstawia kompletną aplikację CRUD działającą w architekturze trójwarstwowej oraz wdrożoną w środowisku chmurowym.
-
-Zaimplementowano:
-
-frontend (Next.js)
-backend REST API (.NET)
-bazę danych SQL Server / Azure SQL
-środowisko Docker
-wdrożenie w chmurze (Azure)
+---
