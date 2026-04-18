@@ -1,5 +1,4 @@
-name: Build and deploy ASP.Net Core app to Azure Web App - taskmanager-backend-95269
-
+name: BACKEND FINAL NO LOGIN
 on:
   push:
     branches:
