@@ -6,6 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 🔥 DODAJ TO
+builder.Configuration.AddAzureKeyVault(
+    new Uri("https://taskmanager10.vault.azure.net/"),
+    new DefaultAzureCredential()
+);
 // Key Vault
 var keyVaultUrl = builder.Configuration["KeyVaultUrl"];
 
@@ -22,7 +27,7 @@ if (!string.IsNullOrWhiteSpace(keyVaultUrl))
 // 2. fallback do klasycznego ConnectionStrings:DefaultConnection
 var connectionString =
     builder.Configuration["DbConnectionString"] ??
-    builder.Configuration.GetConnectionString("DefaultConnection");
+    
 
 // Controllers + Swagger
 builder.Services.AddControllers();
